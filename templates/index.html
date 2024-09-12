@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Image</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+        .card {
+            background-size: cover;  /* 图片铺满整个卡片 */
+            background-position: center;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.1s ease;
+            will-change: transform;
+            /* 让卡片的尺寸根据图片自动调整 */
+            /* aspect-ratio: attr(data-aspect-ratio); */
+            width: 300px; /* 你可以根据需求设置宽度 */
+        }
+    </style>
+</head>
+<body>
+    <div class="card">loading...</div>
+
+    <script>
+        const card = document.querySelector('.card');
+        // 获取窗口宽度和高度的中心点
+        const windowWidth = window.innerWidth / 2;
+        const windowHeight = window.innerHeight / 2;
+        const screenRatio = windowWidth / windowHeight;
+        getRandomImage();
+        
+        document.addEventListener('mousemove', (event) => {
+            // 获取鼠标的坐标
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
+            
+            // 计算偏移量，调整速度
+            const rotateX = (mouseY - windowHeight) / windowHeight * 10;
+            const rotateY = (windowWidth - mouseX) / windowWidth * 10;
+
+            // 设置卡片的旋转角度
+            card.style.transform = `rotateX(${rotateX*2}deg) rotateY(${rotateY*2}deg)`;
+            card.style.boxShadow = `${rotateY}px ${-rotateX}px 20px rgba(0, 0, 0, 0.2)`;
+        });
+
+        async function getRandomImage() {
+            const imageUrl = '/img'; // 替换为你实际的图片URL
+            // 创建一个 Image 对象，加载图片
+            const img = new Image();
+            img.src = imageUrl;
+
+            img.onload = () => {
+                // 图片加载完成后获取宽高比
+                const aspectRatio = img.width / img.height;
+
+                // 删除加载文字
+                card.innerHTML = '';
+
+                // 设置卡片的背景图片
+                card.style.backgroundImage = `url(${imageUrl})`;
+
+                let cardWidth = 0;
+                let cardHeight = 0;
+
+                // 根据宽高比调整高度
+                if (screenRatio < aspectRatio) {
+                    cardWidth = windowWidth; // 设置固定宽度
+                    cardHeight = cardWidth / aspectRatio;
+                }
+                else {
+                    cardHeight = windowHeight; // 设置固定高度
+                    cardWidth = cardHeight * aspectRatio;
+                }
+
+                // 设置卡片的宽度和高度
+                card.style.width = `${cardWidth}px`;
+                card.style.height = `${cardHeight}px`;
+            };
+        }
+    </script>
+     
+</body>
+</html>
